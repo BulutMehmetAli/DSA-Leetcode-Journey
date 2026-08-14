@@ -18,8 +18,17 @@ Ternary Search is a variant of binary search that splits the search interval int
 
 And there a lot of different searching algorithms.
 
-
-
+Conditions to apply Binary Search Algorithm in a Data Structure
+The data structure must be sorted.
+Access to any element of the data structure should take constant time.
+Binary Search Algorithm
+Divide the search space into two halves by finding the middle index "mid". 
+Compare the middle of the search space with the key. 
+If the key is found at middle, the process is terminated.
+If the key is not found at middle, choose which half will be used as the next search space.
+-> If the key is smaller than the middle, then the left side is used for next search.
+-> If the key is larger than the middle, then the right side is used for next search.
+This process is continued until the key is found or the total search space is exhausted.
 
 
 
