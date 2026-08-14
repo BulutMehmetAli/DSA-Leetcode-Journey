@@ -1,0 +1,27 @@
+Searching Algorithms
+
+Searching is the fundamental process of locating a specific element or item within a collection of data. This collection of data can take various forms, such as arrays, lists, trees, or other structured representations.
+
+Basic Searching Algorithms:
+Linear Search – O(n) Time and O(1) Space
+It is the simplest searching algorithm that checks each element sequentially until the key is found or the collection is fully traversed. Works on both sorted and unsorted data.
+
+It is used for an unsorted array. It mainly does one by one comparison of the item to be search with array elements. It takes linear or O(n) Time.
+
+Binary Search – O(log n) Time and O(1) Space
+It works on sorted arrays by repeatedly dividing the search interval in half. If the target matches the middle element, return it; otherwise, continue searching left or right.
+
+It is used for a sorted array. It mainly compares the array's middle element first and if the middle element is same as input, then it returns. Otherwise it searches in either left half or right half based on comparison result (Whether the mid element is smaller or greater). This algorithm is faster than linear search and takes O(Log n) time.
+
+Ternary Search – O(log₃ n) Time and O(1) Space
+Ternary Search is a variant of binary search that splits the search interval into three parts instead of two. Mostly used in searching unimodal functions.
+
+And there a lot of different searching algorithms.
+
+
+
+
+
+
+
+
