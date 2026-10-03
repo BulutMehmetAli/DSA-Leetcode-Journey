@@ -1,0 +1,80 @@
+Ayrı bilgilendirme:
+
+Commit Nedir?
+
+Commit, yaptığınız değişikliklerin (yeni dosya ekleme, mevcut dosyayı düzenleme, silme gibi) "anlık bir fotoğrafını" (snapshot) kaydetmek demektir. Yani "şu ana kadar yaptığım değişiklikleri onaylıyorum, bunu bir kayıt noktası olarak sabitliyorum" anlamına gelir.
+
+Basit Bir Benzetme
+
+Bir belgeyi Word'de düzenlerken düşünün — sürekli "Kaydet" (Ctrl+S) yaparsınız ama bu tek bir dosyanın üzerine yazar, önceki halini kaybedersiniz. Commit ise her kaydettiğinizde yeni bir "versiyon" oluşturmak gibidir, önceki tüm versiyonlar saklı kalır, istediğiniz zaman geçmişteki herhangi bir noktaya dönebilirsiniz.
+
+Türkçe Karşılığı Neden Tam Oturmuyor?
+
+"İşlemek" ya da "taahhüt etmek" kelimeleri teknik olarak doğru çeviriler ama Türkçe konuşan geliştiriciler arasında bile neredeyse hiç kullanılmıyor, herkes direkt "commit atmak" diyor — tıpkı "download etmek", "backup almak" gibi. Bu yüzden Türkçe bir karşılık aramak yerine, "commit" kelimesini olduğu gibi, İngilizce teknik terim olarak benimsemeniz daha pratik olur.
+
+Pratikte Nasıl İşliyor?
+Dosyanızda değişiklik yaparsınız (örneğin yeni bir notebook eklersiniz)
+GitHub Desktop bu değişikliği otomatik algılar, sol tarafta gösterir
+Alt kısımda bir "commit message" (kısa açıklama) yazarsınız — örneğin "Added missing value imputation notebook"
+"Commit to main" butonuna basarsınız → bu, o anki değişikliği bir kayıt noktası olarak yerel (local) Git geçmişinize ekler
+Sonra "Push" butonuna basarsınız → bu commit'i GitHub.com'a (uzak sunucuya) gönderir, artık herkes (ya da sizin repo'nuz public/private durumuna göre siz) görebilir
+
+Özetle: Commit = "şu anki değişikliklerimi bir kilometre taşı olarak kaydediyorum" demek. Her commit, projenizin o anki halinin bir yedeği/versiyonu gibi düşünülebilir, ve GitHub'daki yeşil kutucuklar da işte bu commit'lerin ne zaman atıldığını gösteriyor.
+
+
+-------------------
+Median (medyan), bir sütundaki tüm sayısal değerleri küçükten büyüğe sıraladığınızda **tam ortada kalan değeri** ifade eder; eğer eleman sayısı tekse ortadaki tek değer alınır, çiftse ortadaki iki değerin ortalaması hesaplanır, örneğin [3, 7, 1, 9, 4] verisini sıraladığınızda [1, 3, 4, 7, 9] elde edersiniz ve ortadaki değer olan 4 medyan olur. Medyanın mean'e (aritmetik ortalama) göre en büyük avantajı, **aykırı değerlerden (outlier) çok daha az etkilenmesidir**; çünkü mean tüm değerlerin toplamını böldüğü için tek bir çok büyük veya çok küçük değer ortalamayı ciddi şekilde kaydırabilirken, medyan sadece "ortadaki konuma" baktığı için uç değerlerin sayısal büyüklüğü değil sadece sırası önemlidir, bu yüzden gelir, ev fiyatı gibi çarpık (skewed) dağılıma sahip verilerde mean yerine medyan tercih edilir. Mod (mode) ise tamamen farklı bir mantıkla çalışır ve **en sık tekrar eden değeri** ifade eder; örneğin [3, 7, 3, 9, 3, 7] verisinde 3 sayısı üç kez tekrar ettiği için mod bu veri setinde 3'tür, ve mod hem sayısal hem de kategorik veriler için kullanılabilen tek merkezi eğilim ölçüsüdür çünkü "Male" ya da "Female" gibi kategorik değerlerin bir ortalaması veya medyanı alınamaz ama hangisinin daha sık geçtiği (yani modu) rahatlıkla bulunabilir; bu yüzden missing value doldururken sayısal ve nispeten simetrik dağılıma sahip sütunlarda mean veya medyan, kategorik sütunlarda ise mod kullanılması, verinin doğasına en uygun ve en az yanıltıcı tahmin yöntemidir.
+
+-------------------
+Diyelim ki elimizdeki sütunda veri tipi int ama bazı veriler "35" gibi string olmuş. bunu nasıl tespit edebiliriz ? 
+
+Hocam bu durumu tespit etmenin birkaç yolu var, sırasıyla anlatayım.
+
+## 1. `dtype` Kontrolü (İlk İpucu)
+
+Eğer sütunda **gerçekten** hem int hem string karışıksa, pandas o sütunu otomatik olarak `object` tipinde tutar (çünkü tek bir sütunda hem sayı hem string barındıramaz, hepsini "genel amaçlı" object tipine düşürür):
+```python
+df['Age'].dtype
+```
+Eğer beklediğiniz `int64` yerine `object` görüyorsanız, bu size **"bu sütunda bir tutarsızlık var"** sinyalini verir. Ama bu sadece bir ipucu, kesin kanıt değil.
+
+## 2. `apply(type)` ile Her Hücrenin Gerçek Tipini Görme (En Kesin Yöntem)
+
+```python
+df['Age'].apply(type).value_counts()
+```
+Bu size şöyle bir çıktı verir:
+```
+<class 'int'>    145
+<class 'str'>      3
+Name: Age, dtype: int64
+```
+Artık kaç tane `int`, kaç tane `str` olduğunu **net sayılarla** görürsünüz.
+
+## 3. Hangi Satırların String Olduğunu Bulma
+
+```python
+df[df['Age'].apply(lambda x: isinstance(x, str))]
+```
+Bu, sadece **string olan değerlere sahip satırları** filtreleyip gösterir, hangi kayıtların sorunlu olduğunu tam olarak görürsünüz.
+
+## 4. `pd.to_numeric()` ile Test Etme (Pratik Alternatif)
+
+```python
+pd.to_numeric(df['Age'], errors='coerce').isnull().sum()
+```
+Burada mantık şu: `pd.to_numeric()` tüm değerleri sayıya çevirmeye çalışır, **çeviremediği** (yani sayı olmayan/bozuk) değerleri `errors='coerce'` sayesinde `NaN` yapar. Sonra `.isnull().sum()` ile kaç tane değerin **sayıya çevrilemediğini** (yani sorunlu olduğunu) sayısal olarak görürsünüz. Bu yöntem hem tespit hem de "kaç tane böyle veri var" bilgisini bir arada verir.
+
+**Not:** Sizin örneğinizde `"35"` gibi bir string aslında sayısal bir string, yani `pd.to_numeric()` bunu **başarıyla** `35`'e çevirir, hata vermez, `NaN` olmaz. Bu yüzden bu özel durumda (`"35"` gibi rakamlardan oluşan string) yöntem 4 sizi yanıltabilir, sorunu **göstermeyebilir** çünkü teknik olarak çevrilebilir bir değer.
+
+## 5. Sizin Özel Durumunuz İçin En Doğru Yöntem: Yöntem 2
+
+Sizin senaryonuzda (`35` yerine `"35"`, yani **görünüşte aynı ama tip olarak farklı**) en güvenilir yöntem kesinlikle **2. yöntem** (`apply(type)`), çünkü bu doğrudan Python'ın kendi tip sistemine bakıyor, değerin **içeriğine değil tipine** odaklanıyor. `pd.to_numeric` gibi yöntemler "değer sayıya çevrilebilir mi" sorusuna bakar, ama sizin asıl derdiniz "bu değer zaten int mi yoksa string mi geldi" sorusu, bu da tam olarak `type()` fonksiyonunun cevapladığı soru.
+
+## Düzeltme (Tip Standardizasyonu)
+
+Tespit ettikten sonra düzeltmek için:
+```python
+df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
+```
+Bu, hem `35` hem `"35"` gibi değerleri tek bir standart `int`/`float` tipine indirger, artık sütun tamamen sayısal ve tutarlı olur.
