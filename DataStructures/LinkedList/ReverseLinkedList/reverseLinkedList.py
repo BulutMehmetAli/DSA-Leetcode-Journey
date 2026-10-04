@@ -30,7 +30,7 @@ class LinkedList:
             current = current.next
         print("None")
 
-    
+
     # def reverseList(self):
     #     prev = None
     #     current = self.head
@@ -57,6 +57,22 @@ class LinkedList:
 
         self.head = prev     
 
+    def reverseListWithRecursion(self):
+
+        self.tail = self.head
+        self.head = self._reverse(self.head)
+
+    def _reverse(self , data):
+        if data is None or data.next is None:
+            return data
+
+        rec = self._reverse(data.next)
+
+        data.next.next = data
+        data.next = None
+
+        return rec
+
 ourList = LinkedList()
 ourList.addNode(5)
 ourList.addNode(51)
@@ -65,5 +81,5 @@ ourList.addNode(35)
 ourList.addNode(45)
 ourList.addNode(55)
 
-ourList.reverseList()
+ourList.reverseListWithRecursion()
 ourList.print_list()
