@@ -1,0 +1,211 @@
+Linked List Data Structure
+
+A linked list is a fundamental data structure in computer science. It mainly allows efficient insertion and deletion operations compared to arrays. Like arrays, it is also used to implement other data structures like stack, queue and deque.
+
+A linked list is a type of linear data structure individual items are not necessarily at contiguous locations. The individual items are called nodes and connected with each other using links.
+
+A node contains two things first is data and second is a link that connects it with another node.
+The first node is called the head node and we can traverse the whole list using this head and next links.
+
+Here’s the comparison of Linked List and Arrays
+
+Linked List:
+
+Data Structure: Non-contiguous
+Memory Allocation: Typically allocated one by one to individual elements
+Insertion/Deletion: Efficient
+Access: Sequential
+Array:
+
+Data Structure: Contiguous
+Memory Allocation: Typically allocated to the whole array
+Insertion/Deletion: Inefficient
+Access: Random
+
+1. Contiguous ve Non-contiguous
+Array'in elemanları bellekte yan yana durur. Linked list'in düğümleri ise belleğin farklı yerlerine dağılmış olabilir. Onları bir arada tutan şey yalnızca pointer'lardır.
+
+2. Bellek ayırma
+Array için tek seferde büyük bir blok ayrılır. Dolarsa daha büyük bir blok alınıp her şey oraya kopyalanır. Linked list'te her yeni eleman için ayrı küçük bir düğüm oluşturulur, kopyalama gerekmez. Bunun bedeli, her düğümün ekstra bir pointer taşımasıdır.
+
+3. Ekleme/Silme
+Array'de araya eleman eklersen arkadaki herkesi bir kaydırman gerekir, bu O(n) sürer. Linked list'te sadece iki pointer'ı değiştirirsin, bu O(1) sürer. Önemli bir not: bu "efficient" ifadesi, ekleyeceğin yerdeki düğüm elinde olduğunda geçerlidir. O düğümü bulmak için baştan yürümek yine O(n) tutar.
+
+4. Erişim
+Array'de adres = başlangıç + index × eleman_boyutu hesabıyla istediğin elemana doğrudan atlarsın. Buna random access denir. Linked list'te 5. elemana ulaşmak için 1, 2, 3, 4 diye sırayla yürümek zorundasın. Buna sequential access denir.
+
+Python'daki list aslında linked list değildir, dinamik bir array'dir. Bu yüzden lst[1000] hızlıdır ama lst.insert(0, x) yavaştır.
+
+1. Singly Linked List 
+
+A singly linked list is a fundamental data structure, it consists of nodes where each node contains a data field and a reference to the next node in the linked list. The next of the last node is null, indicating the end of the list. Linked Lists support efficient insertion and deletion operations.
+
+In a singly linked list, each node consists of two parts: data and a pointer to the next node. This structure allows nodes to be dynamically linked together, forming a chain-like sequence.
+
+Küçük bir not: Python'da None ile karşılaştırma yaparken == None yerine is None kullanmak doğru alışkanlıktır.
+
+Advantage
+Dynamic size (no fixed limit like arrays)
+Efficient insertion and deletion at beginning and end. We also have insertion at the middle efficient if we have reference or pointer to the node after which we need to insert.
+Can implement complex data structures like stack, queue, graph
+
+Disadvantage
+Extra memory required for storing pointers
+No direct/random access (need traversal)
+Cache unfriendly (not stored in contiguous memory)
+
+Cache nedir?
+
+İşlemci RAM'e doğrudan ulaşmak istediğinde bu işlem çok yavaştır. Bu yüzden işlemcinin içinde çok hızlı ama küçük bir bellek bulunur, buna cache denir. Cache'ten veri okumak RAM'den okumaya göre kabaca 50-100 kat daha hızlıdır.
+
+İşin püf noktası şu: işlemci RAM'den tek bir değer istediğinde yalnızca o değeri getirmez, etrafındaki komşu bölgeyi de bir blok halinde (genellikle 64 byte'lık bir cache line) cache'e alır. Mantığı şudur: "Bu adresi istedin, büyük ihtimalle yanındakini de isteyeceksin." Buna spatial locality (uzamsal yerellik) denir.
+
+Array neden cache friendly?
+
+Array'in elemanları bellekte yan yana durur. a[0]'ı okuduğunda a[1], a[2], a[3]... de aynı blokla birlikte cache'e gelir. Sonraki elemanlara eriştiğinde veri zaten cache'te hazır bekler. Buna cache hit denir. Üstelik işlemci düzenli ilerlediğini fark edip sonraki blokları önceden getirir (prefetching).
+
+Bellek: [10][20][30][40][50][60]...  → tek seferde blok halinde gelir
+
+Linked list neden cache unfriendly?
+
+Düğümler bellekte dağınık durur. Bir düğümü okuduğunda cache'e gelen komşu bölgede bir sonraki düğüm büyük ihtimalle yoktur. Her current = current.next adımında işlemci yine RAM'e gitmek zorunda kalır. Buna cache miss denir. Üstelik bir sonraki adresi ancak mevcut düğümü okuduktan sonra öğrenebildiği için önceden getirme de yapamaz.
+
+Bellek: [10]......[30]...........[20]....[40]  → her düğüm ayrı yolculuk
+
+Pratikteki sonucu
+
+İki yapıyı baştan sona gezmek kâğıt üzerinde aynı karmaşıklığa sahiptir, ikisi de O(n). Ama gerçek dünyada array kat kat daha hızlı çalışır. Big-O sadece adım sayısını ölçer, her adımın maliyetini hesaba katmaz. Bu yüzden linked list'in teorik avantajları (araya O(1) ekleme gibi) pratikte çoğu zaman cache maliyeti yüzünden yok olur. Modern yazılımda varsayılan seçimin genellikle array olmasının sebebi budur.
+
+Python için küçük bir not: Bu fark en çok C/C++ gibi dillerde hissedilir. Python'da list bile elemanların kendisini değil, bellekte dağınık duran nesnelere referansları tutar. Bu yüzden Python'da fark daha az belirgindir.
+
+Soru : Madem list yapısı daha kullanışlı biz linkedlist yapısını hangi durumlarda tercih etmeliyiz ?
+
+Güzel soru. Kısa cevap şu: günlük işlerin çoğunda array (Python'da `list`) daha iyidir. Linked list ise belirli işlemlerin çok sık yapıldığı ya da elemanların bellekte yer değiştirmemesi gereken özel durumlarda öne çıkar.
+
+**1. Baştan veya ortadan sık ekleme/silme yapılıyorsa**
+
+Linked list'in asıl gücü, elinde bir düğüm olduğunda onun önüne veya arkasına O(1) sürede ekleme/silme yapabilmesidir. Array'de aynı işlem arkadaki tüm elemanları kaydırmayı gerektirir. Örneğin sürekli başa eleman eklenen bir yapı için `list.insert(0, x)` O(n) sürer, linked list'te O(1).
+
+**2. Kuyruk (queue) ve çift uçlu kuyruk (deque)**
+
+Bir uçtan ekleyip diğer uçtan çıkardığın yapılar linked list'e çok uygundur. Python'daki `collections.deque` bu mantıkla, birbirine bağlı bloklardan oluşan bir yapı olarak yazılmıştır. Bu yüzden `deque.popleft()` O(1) sürerken `list.pop(0)` O(n) sürer.
+
+**3. LRU Cache**
+
+Klasik bir mülakat sorusudur. "En son kullanılmayanı at" mantığındaki önbellekte, bir eleman kullanıldığında onu hızlıca en öne taşıman gerekir. Bunun için **hash map + doubly linked list** birlikte kullanılır. Hash map düğümü O(1) sürede bulur, linked list onu O(1) sürede yerinden alıp başa taşır. Python'daki `OrderedDict` de arka planda bu fikri kullanır.
+
+**4. Gerçek hayattan sıralı yapılar**
+
+- **Tarayıcı geri/ileri geçmişi, undo/redo:** doubly linked list (iki yönde gezinme)
+- **Müzik çalma listesinde "tekrarla" modu:** circular linked list (sondan başa döner)
+- **İşletim sisteminde round-robin zamanlama:** süreçler sırayla, döngüsel olarak işlemciye alınır
+
+**5. Bellek yeniden boyutlandırmanın sorun olduğu durumlar**
+
+Array dolduğunda daha büyük bir alan ayrılır ve tüm elemanlar oraya kopyalanır. Bu işlem arada bir ani gecikmeye yol açar. Gerçek zamanlı sistemlerde (oyunlar, gömülü sistemler) bu ani gecikmeler kabul edilemeyebilir. Linked list'te böyle bir kopyalama olmaz, her ekleme sabit sürer. Ayrıca belleğin büyük ve bitişik bir boş alan bulamadığı durumlarda (parçalanmış bellek) linked list küçük küçük parçalarla çalışabilir. İşletim sistemleri boş bellek bloklarını bu yüzden linked list ile takip eder (**free list**).
+
+**6. Başka veri yapılarının yapı taşı olarak**
+
+- **Hash table'da çakışma çözümü (chaining):** aynı yere düşen elemanlar bir linked list'te tutulur.
+- **Graf'larda adjacency list:** her düğümün komşuları bir listede tutulur.
+- **Stack ve queue** implementasyonları.
+
+**Ne zaman tercih etmemelisin?**
+
+- İndeksle erişim sık yapılıyorsa (`a[i]`)
+- Veri çoğunlukla okunuyor ve baştan sona geziliyorsa
+- Veri küçükse (bu durumda kaydırma maliyeti önemsizdir, cache avantajı ağır basar)
+
+**Python açısından gerçekçi bir not:** Python'da günlük işlerde kendi linked list'ini nadiren yazarsın. Kuyruk için `deque`, sıralı sözlük için `OrderedDict` gibi hazır yapılar var. Linked list öğrenmenin asıl değeri başka yerde: pointer/referans mantığını kavratması, ağaç ve graf gibi daha karmaşık yapılara temel oluşturması ve mülakatlarda çok sık sorulması. Ağaçlar aslında "birden fazla next'i olan linked list"tir. Burada iyi oturtursan oradaki işin çok kolaylaşır.
+
+Tabii. Recursive reverse'e geçmeden önce recursion'ı sağlam oturtmak gerekiyor, yoksa o kod sihir gibi görünür.
+
+## Recursion nedir?
+
+**Recursion (özyineleme)**, bir fonksiyonun kendi kendini çağırmasıdır. Temel fikir şu: büyük bir problemi, **aynı türden ama daha küçük** bir probleme indirgersin. O küçük problemi de yine aynı fonksiyon çözer. Bu küçülme, cevabı doğrudan bilinen en küçük duruma ulaşana kadar sürer.
+
+Gündelik bir örnek: sinemada en arkadan kaçıncı sırada oturduğunu öğrenmek istiyorsun ama sayamıyorsun. Önündekine "sen kaçıncı sıradasın?" diye soruyorsun. O da önündekine soruyor. En öndeki "ben 1. sıradayım" diyor, çünkü önünde kimse yok. Cevap geriye doğru akıyor: "o zaman ben 2", "ben 3"... ve sana kadar ulaşıyor.
+
+## İki zorunlu parça
+
+Her recursive fonksiyonda iki şey olmalı:
+
+1. **Base case (durma koşulu):** Cevabın doğrudan bilindiği en küçük durum. Sinema örneğinde "önümde kimse yok, ben 1. sıradayım".
+2. **Recursive case (özyinelemeli adım):** Problemi küçültüp fonksiyonu tekrar çağırdığın kısım. "Önümdekinin cevabı + 1".
+
+Base case yoksa fonksiyon sonsuza kadar kendini çağırır.
+
+## Klasik örnek: Faktöriyel
+
+5! = 5 × 4 × 3 × 2 × 1. Dikkat edersen 5! = 5 × 4!, yani problem kendisinin daha küçük bir hali cinsinden yazılabiliyor.
+
+```python
+def factorial(n):
+    if n == 1:                     # base case
+        return 1
+    return n * factorial(n - 1)    # recursive case
+
+print(factorial(5))   # 120
+```
+
+## Arka planda ne oluyor? (Call stack)
+
+Recursion'ı anlamanın anahtarı burada. Bir fonksiyon başka bir fonksiyonu çağırdığında, mevcut fonksiyon **bekleme moduna** geçer ve kaldığı yeri hatırlar. Bu bekleyen çağrılar üst üste bir yığında, **call stack**'te tutulur.
+
+```
+factorial(5) → 5 * factorial(4)  ⏸ bekliyor
+  factorial(4) → 4 * factorial(3)  ⏸ bekliyor
+    factorial(3) → 3 * factorial(2)  ⏸ bekliyor
+      factorial(2) → 2 * factorial(1)  ⏸ bekliyor
+        factorial(1) → 1   ✅ base case, geri dönüş başlıyor
+      factorial(2) → 2 * 1 = 2
+    factorial(3) → 3 * 2 = 6
+  factorial(4) → 4 * 6 = 24
+factorial(5) → 5 * 24 = 120
+```
+
+İki aşama var:
+- **İniş:** Fonksiyon kendini çağırarak base case'e kadar derinleşir. Bu sırada hiçbir hesap tamamlanmaz, herkes bekler.
+- **Çıkış:** Base case cevap verince bekleyen çağrılar sondan başa doğru tek tek tamamlanır.
+
+Recursive reverse'i anlarken bu "iniş-çıkış" fikri çok kritik olacak.
+
+## Linked list ile ilk örnek
+
+Linked list doğası gereği recursive bir yapıdır. Bir liste, bir düğüm ve **geri kalan listeden** oluşur. Listeyi yazdırmayı recursive yapalım:
+
+```python
+def print_recursive(node):
+    if node is None:              # base case: liste bitti
+        return
+    print(node.data, end=" -> ")
+    print_recursive(node.next)    # geri kalan listeyi yazdır
+
+print_recursive(ourList.head)     # 10 -> 20 -> 30 ->
+```
+
+Şimdi küçük bir değişiklik yapalım ve print ile çağrının yerini değiştirelim:
+
+```python
+def print_reverse(node):
+    if node is None:
+        return
+    print_reverse(node.next)      # önce geri kalanı hallet
+    print(node.data, end=" -> ")  # sonra kendini yazdır
+
+print_reverse(ourList.head)       # 30 -> 20 -> 10 ->
+```
+
+Liste **ters** yazıldı. Sebebi şu: print artık çıkış aşamasında çalışıyor. İnişte hiçbir şey yazılmıyor, en sona ulaşılınca çağrılar sondan başa doğru tamamlanıyor ve her biri kendi verisini o sırayla yazıyor. Bu, recursive reverse'in temel fikrinin ta kendisi.
+
+## Dikkat edilmesi gerekenler
+
+- **Base case'i unutma.** Unutursan ya da base case'e asla ulaşılamazsa Python `RecursionError: maximum recursion depth exceeded` hatası verir.
+- **Problem her çağrıda küçülmeli.** `factorial(n - 1)` yerine yanlışlıkla `factorial(n)` yazarsan aynı problemi sonsuza kadar çözmeye çalışırsın.
+- **Python'da derinlik sınırı var.** Varsayılan olarak yaklaşık 1000 iç içe çağrıya izin verir. Yani 10.000 elemanlı bir linked list'i recursive yöntemle ters çevirmeye çalışırsan hata alırsın. Bu yüzden Python'da linked list işlemlerinde iterative (döngülü) çözüm pratikte daha güvenlidir. Recursive çözümü daha çok mantığı kavramak ve mülakatlar için öğreniriz.
+
+## Recursion mı, döngü mü?
+
+Her recursive çözüm döngüyle de yazılabilir, tersi de geçerlidir. Recursion; ağaçlar, graf gezme ve "böl ve fethet" algoritmaları (merge sort, quick sort) gibi problemin doğal olarak kendine benzer parçalara bölündüğü durumlarda kodu çok daha sade hale getirir. Bedeli ise her çağrının call stack'te yer kaplamasıdır.
+
+Kendini denemek istersen önce şunu dene: linked list'teki düğüm sayısını recursive olarak bulan bir `count(node)` fonksiyonu yaz. İpucu: boş listenin uzunluğu 0'dır, diğer her liste "1 + geri kalanın uzunluğu"dur. Bunu yazabilirsen recursive reverse'e hazırsın demektir.
