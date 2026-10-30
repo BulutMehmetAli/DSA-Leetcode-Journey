@@ -35,6 +35,7 @@ class LinkedList:
         while temp.next:
             size += 1
             temp = temp.next
+            
         return size
     
     def insertSpesificPos(self, data, index):  # index 1'den başlıyor
